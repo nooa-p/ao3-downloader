@@ -12,7 +12,7 @@ workid = url.strip('https://archiveofourown.org/works/').strip('/chapters/388308
 finalurl = "https://archiveofourown.org/downloads/" + workid + "/" + stripped + ".html"
 
 res = requests.get(finalurl)
-playfile = open('test.html', 'wb')
+playfile = open((stripped + '.html'), 'wb')
 for chunk  in res.iter_content(100000):
     playfile.write(chunk)
 playfile.close()
