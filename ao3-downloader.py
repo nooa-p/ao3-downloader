@@ -1,21 +1,20 @@
+import requests
 import sys
-import os
+from bs4 import BeautifulSoup
 from selenium import webdriver
 
-options = webdriver.FirefoxOptions()
-options.headless = True
-options.set_preference('browser.download.folderList', 2)
-options.set_preference('browser.download.manager.showWhenStarting', False)
-options.set_preference('browser.download.dir', os.path.join(os.path.expanduser("~"), "Downloads\\"))
-options.set_preference('browser.helperApps.neverAsk.saveToDisk', 'text/html')
+url = "https://archiveofourown.org/works/16571744/chapters/38830805"
 
-driver = webdriver.Firefox(options=options)
-driver.get('https://archiveofourown.org/works/22334818')
+res = requests.get(url)
+soup = BeautifulSoup(res.text, 'html.parser')
+title = soup.find(class_="title heading")
+title = str(title)
+stripped = title.strip('<h2 class="title heading">/').strip()
+workid = url.strip('https://archiveofourown.org/works/').strip('/chapters/38830805')
+finalurl = "https://archiveofourown.org/downloads/" + workid + "/" + stripped + ".html"
 
-dl_button = driver.find_element_by_class_name('download')
-dl_button.click()
-
-html_button = driver.find_element_by_link_text('HTML')
-html_button.click()
-
-driver.close()
+res = requests.get(finalurl)
+playfile = open((stripped + '.html'), 'wb')
+for chunk  in res.iter_content(100000):
+    playfile.write(chunk)
+playfile.close()
