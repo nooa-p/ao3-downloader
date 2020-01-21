@@ -41,11 +41,27 @@ def get_dl(url):
     s = BeautifulSoup(r.text, 'html.parser')
     return str(s.find(class_="download").find("a", string="HTML")).strip('<a href=">HTML/')
 
+# gets file name from download url
+def get_name(url):
+    url = url.lstrip('downloads/')
+    i = 0
+    while not url[i] == "/":
+        i += 1
+    url = url[i+1:]
+    i = 0
+    while not url[i] == "?":
+        i += 1
+    url = url[:i]
+    if "%20" in url:
+        url = url.replace('%20', ' ')
+    return url
+
 # saves the html file on disk
 def download(url):
     url = get_dl(check_url(url))
+    name = get_name(url)
     r = requests.get("https://archiveofourown.org/" + url)
-    pf = open(('testi.html'), 'wb')
+    pf = open(name, 'wb')
     for chunk in r.iter_content(100000):
         pf.write(chunk)
     pf.close()
