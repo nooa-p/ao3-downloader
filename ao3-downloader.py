@@ -65,3 +65,8 @@ def download(url):
     for chunk in r.iter_content(100000):
         pf.write(chunk)
     pf.close()
+
+if len(sys.argv) < 2:
+    sys.exit('please provide url')
+    
+download(sys.argv[1])
