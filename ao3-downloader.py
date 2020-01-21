@@ -2,6 +2,7 @@ import requests
 import sys
 from bs4 import BeautifulSoup
 
+# checks that the url is in correct form
 def check_url(url):
     if not "archiveofourown.org/works/" in url:
         sys.exit("error: incorrect url type / not ao3 link")
@@ -27,17 +28,19 @@ def check_url(url):
         else:
             return "https://" + url
 
+# gets the download url from html code using beautifulsoup
+def get_dl(url):
+    r = requests.get(url)
+    s = BeautifulSoup(r.text, 'html.parser')
+    return str(s.find(class_="download").find("a", string="HTML")).strip('<a href=">HTML/')
 
-#url = "https://archiveofourown.org/works/23"
+# saves the html file on disk
+def download(url):
+    url = get_dl(check_url(url))
+    r = requests.get("https://archiveofourown.org/" + url)
+    pf = open(('testi.html'), 'wb')
+    for chunk in r.iter_content(100000):
+        pf.write(chunk)
+    pf.close()
 
-#print(check_url(url))
-
-#res = requests.get(url)
-#soup = BeautifulSoup(res.text, 'html.parser')
-#finalurl = str(soup.find(class_="download").find("a", string="HTML")).strip('<a href=">HTML/')
-
-#res = requests.get("https://archiveofourown.org/" + finalurl)
-#playfile = open(('testi.html'), 'wb')
-#for chunk  in res.iter_content(100000):
-#    playfile.write(chunk)
-#playfile.close()
+download("https://archiveofourown.org/works/22345645/chapters/53382004")
